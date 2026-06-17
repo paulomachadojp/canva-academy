@@ -14,6 +14,7 @@ import { Route as MateriaisRouteImport } from './routes/materiais'
 import { Route as CursoCanvaRouteImport } from './routes/curso-canva'
 import { Route as CertificadoRouteImport } from './routes/certificado'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ModuloModuleIdRouteImport } from './routes/modulo.$moduleId'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModuloModuleIdRoute = ModuloModuleIdRouteImport.update({
+  id: '/modulo/$moduleId',
+  path: '/modulo/$moduleId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certificado' | '/curso-canva' | '/materiais' | '/ranking'
+  fullPaths:
+    | '/'
+    | '/certificado'
+    | '/curso-canva'
+    | '/materiais'
+    | '/ranking'
+    | '/modulo/$moduleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certificado' | '/curso-canva' | '/materiais' | '/ranking'
+  to:
+    | '/'
+    | '/certificado'
+    | '/curso-canva'
+    | '/materiais'
+    | '/ranking'
+    | '/modulo/$moduleId'
   id:
     | '__root__'
     | '/'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/modulo/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,6 +105,7 @@ export interface RootRouteChildren {
   CursoCanvaRoute: typeof CursoCanvaRoute
   MateriaisRoute: typeof MateriaisRoute
   RankingRoute: typeof RankingRoute
+  ModuloModuleIdRoute: typeof ModuloModuleIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/modulo/$moduleId': {
+      id: '/modulo/$moduleId'
+      path: '/modulo/$moduleId'
+      fullPath: '/modulo/$moduleId'
+      preLoaderRoute: typeof ModuloModuleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -131,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   CursoCanvaRoute: CursoCanvaRoute,
   MateriaisRoute: MateriaisRoute,
   RankingRoute: RankingRoute,
+  ModuloModuleIdRoute: ModuloModuleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
