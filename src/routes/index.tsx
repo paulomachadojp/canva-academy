@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlayCircle, CheckCircle2, Circle, Clock } from "lucide-react";
+import { modules } from "@/lib/course-data";
+import { useProgress } from "@/lib/progress";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -11,15 +13,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-export const modules = [
-  { id: "introducao", title: "Introdução ao Canva", lessons: 5, progress: 100 },
-  { id: "ferramentas", title: "Ferramentas Essenciais", lessons: 8, progress: 60 },
-  { id: "tipografia", title: "Tipografia e Cores", lessons: 6, progress: 25 },
-  { id: "layouts", title: "Layouts e Composição", lessons: 7, progress: 0 },
-  { id: "branding", title: "Branding Visual", lessons: 6, progress: 0 },
-  { id: "projetos", title: "Projetos Práticos", lessons: 10, progress: 0 },
-];
-
 function getStatus(p: number) {
   if (p === 0) return { label: "Não iniciado", className: "bg-muted text-muted-foreground", Icon: Circle };
   if (p >= 100) return { label: "Concluído", className: "bg-primary/15 text-primary", Icon: CheckCircle2 };
@@ -27,13 +20,11 @@ function getStatus(p: number) {
 }
 
 function Index() {
-  const totalLessons = modules.reduce((a, m) => a + m.lessons, 0);
-  const completedLessons = modules.reduce((a, m) => a + Math.round((m.lessons * m.progress) / 100), 0);
-  const overall = Math.round((completedLessons / totalLessons) * 100);
+  const { moduleProgress, courseProgress } = useProgress();
+  const overall = courseProgress();
 
   return (
     <div className="mx-auto max-w-7xl space-y-10">
-      {/* Banner */}
       <section className="relative overflow-hidden rounded-2xl border border-border bg-card">
         <div className="relative aspect-[21/9] w-full bg-gradient-to-br from-primary/30 via-accent to-card md:aspect-[21/7]">
           <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
@@ -52,38 +43,35 @@ function Index() {
           </div>
         </div>
 
-        {/* Overall progress */}
         <div className="space-y-3 p-6 md:p-8">
           <div className="flex items-end justify-between gap-4">
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground">Progresso geral</p>
               <p className="text-xs text-muted-foreground">
-                {completedLessons} de {totalLessons} aulas concluídas
+                {overall.completed} de {overall.total} aulas concluídas
               </p>
             </div>
-            <span className="font-display text-2xl font-bold text-primary md:text-3xl">{overall}%</span>
+            <span className="font-display text-2xl font-bold text-primary md:text-3xl">{overall.percent}%</span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary to-primary/70 transition-all"
-              style={{ width: `${overall}%` }}
+              style={{ width: `${overall.percent}%` }}
             />
           </div>
         </div>
       </section>
 
-      {/* Modules */}
       <section className="space-y-5">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-xl font-bold md:text-2xl">Módulos do curso</h2>
-            <p className="text-sm text-muted-foreground">Acompanhe seu progresso em cada módulo</p>
-          </div>
+        <div>
+          <h2 className="text-xl font-bold md:text-2xl">Módulos do curso</h2>
+          <p className="text-sm text-muted-foreground">Acompanhe seu progresso em cada módulo</p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((m, i) => {
-            const status = getStatus(m.progress);
+            const p = moduleProgress(m.id);
+            const status = getStatus(p.percent);
             return (
               <Link
                 key={m.id}
@@ -108,25 +96,20 @@ function Index() {
                 <div className="flex flex-1 flex-col gap-3 p-5">
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Módulo {i + 1}</p>
-                    <h3 className="font-semibold leading-tight transition group-hover:text-primary">
-                      {m.title}
-                    </h3>
+                    <h3 className="font-semibold leading-tight transition group-hover:text-primary">{m.title}</h3>
                   </div>
 
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" /> {m.lessons} aulas
+                    <Clock className="h-3.5 w-3.5" /> {m.lessons.length} aulas
                   </p>
 
                   <div className="mt-auto space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">Progresso</span>
-                      <span className="font-semibold text-foreground">{m.progress}%</span>
+                      <span className="font-semibold text-foreground">{p.percent}%</span>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all"
-                        style={{ width: `${m.progress}%` }}
-                      />
+                      <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${p.percent}%` }} />
                     </div>
                   </div>
                 </div>
