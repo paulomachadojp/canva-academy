@@ -15,6 +15,7 @@ import { Route as CursoCanvaRouteImport } from './routes/curso-canva'
 import { Route as CertificadoRouteImport } from './routes/certificado'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuloModuleIdRouteImport } from './routes/modulo.$moduleId'
+import { Route as ModuloModuleIdAulaLessonIdRouteImport } from './routes/modulo.$moduleId.aula.$lessonId'
 
 const RankingRoute = RankingRouteImport.update({
   id: '/ranking',
@@ -46,6 +47,12 @@ const ModuloModuleIdRoute = ModuloModuleIdRouteImport.update({
   path: '/modulo/$moduleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModuloModuleIdAulaLessonIdRoute =
+  ModuloModuleIdAulaLessonIdRouteImport.update({
+    id: '/aula/$lessonId',
+    path: '/aula/$lessonId',
+    getParentRoute: () => ModuloModuleIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,7 +60,8 @@ export interface FileRoutesByFullPath {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
-  '/modulo/$moduleId': typeof ModuloModuleIdRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +69,8 @@ export interface FileRoutesByTo {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
-  '/modulo/$moduleId': typeof ModuloModuleIdRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +79,8 @@ export interface FileRoutesById {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
-  '/modulo/$moduleId': typeof ModuloModuleIdRoute
+  '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
     | '/materiais'
     | '/ranking'
     | '/modulo/$moduleId'
+    | '/modulo/$moduleId/aula/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '/materiais'
     | '/ranking'
     | '/modulo/$moduleId'
+    | '/modulo/$moduleId/aula/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -97,6 +109,7 @@ export interface FileRouteTypes {
     | '/materiais'
     | '/ranking'
     | '/modulo/$moduleId'
+    | '/modulo/$moduleId/aula/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +118,7 @@ export interface RootRouteChildren {
   CursoCanvaRoute: typeof CursoCanvaRoute
   MateriaisRoute: typeof MateriaisRoute
   RankingRoute: typeof RankingRoute
-  ModuloModuleIdRoute: typeof ModuloModuleIdRoute
+  ModuloModuleIdRoute: typeof ModuloModuleIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -152,8 +165,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModuloModuleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/modulo/$moduleId/aula/$lessonId': {
+      id: '/modulo/$moduleId/aula/$lessonId'
+      path: '/aula/$lessonId'
+      fullPath: '/modulo/$moduleId/aula/$lessonId'
+      preLoaderRoute: typeof ModuloModuleIdAulaLessonIdRouteImport
+      parentRoute: typeof ModuloModuleIdRoute
+    }
   }
 }
+
+interface ModuloModuleIdRouteChildren {
+  ModuloModuleIdAulaLessonIdRoute: typeof ModuloModuleIdAulaLessonIdRoute
+}
+
+const ModuloModuleIdRouteChildren: ModuloModuleIdRouteChildren = {
+  ModuloModuleIdAulaLessonIdRoute: ModuloModuleIdAulaLessonIdRoute,
+}
+
+const ModuloModuleIdRouteWithChildren = ModuloModuleIdRoute._addFileChildren(
+  ModuloModuleIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -161,7 +193,7 @@ const rootRouteChildren: RootRouteChildren = {
   CursoCanvaRoute: CursoCanvaRoute,
   MateriaisRoute: MateriaisRoute,
   RankingRoute: RankingRoute,
-  ModuloModuleIdRoute: ModuloModuleIdRoute,
+  ModuloModuleIdRoute: ModuloModuleIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
