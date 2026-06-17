@@ -28,7 +28,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2 px-2 py-3">
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground font-display font-bold">
-            E
+            C
           </div>
           <span className="font-display text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden">
             Canva<span className="text-primary">Academy</span>
