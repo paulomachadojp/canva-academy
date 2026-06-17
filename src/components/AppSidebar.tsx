@@ -31,7 +31,7 @@ export function AppSidebar() {
             E
           </div>
           <span className="font-display text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden">
-            Etek<span className="text-primary">Academy</span>
+            Canva<span className="text-primary">Academy</span>
           </span>
         </Link>
       </SidebarHeader>
