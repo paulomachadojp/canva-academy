@@ -28,14 +28,30 @@ function LessonPage() {
   const currentIndex = mod.lessons.findIndex((l) => l.id === lesson.id);
   const nextLesson = mod.lessons[currentIndex + 1];
 
+  const [rating, setRating] = useState(0);
+  const [rated, setRated] = useState(false);
+
   const handleComplete = () => {
-    setLessonCompleted(lesson.id, !done);
+    const next = !done;
+    setLessonCompleted(lesson.id, next);
+    if (next) awardLessonComplete(mod.id, lesson.id);
   };
 
   const handleCompleteAndNext = () => {
-    if (!done) setLessonCompleted(lesson.id, true);
+    if (!done) {
+      setLessonCompleted(lesson.id, true);
+      awardLessonComplete(mod.id, lesson.id);
+    }
     if (nextLesson) {
       navigate({ to: "/modulo/$moduleId/aula/$lessonId", params: { moduleId: mod.id, lessonId: nextLesson.id } });
+    }
+  };
+
+  const handleRate = (n: number) => {
+    setRating(n);
+    if (!rated) {
+      setRated(true);
+      awardLessonRate(lesson.id);
     }
   };
 
