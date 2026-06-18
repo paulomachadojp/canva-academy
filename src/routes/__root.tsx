@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
+import { supabase } from "@/integrations/supabase/client";
+import { awardDailyLogin } from "@/lib/points";
 
 function NotFoundComponent() {
   return (
