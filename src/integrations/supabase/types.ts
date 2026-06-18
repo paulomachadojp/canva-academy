@@ -188,6 +188,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_points: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          points?: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -211,9 +235,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_points_ranking: {
+        Row: {
+          avatar: string | null
+          name: string | null
+          position: number | null
+          total_points: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      award_daily_login: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
