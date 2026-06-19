@@ -1,9 +1,9 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, PlayCircle, Clock, Download, FileText, Check, Star } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, CheckCircle2, PlayCircle, Clock, Download, FileText, Check } from "lucide-react";
 import { findLesson, findModule } from "@/lib/course-data";
 import { useProgress } from "@/lib/progress";
-import { awardLessonComplete, awardLessonRate } from "@/lib/points";
+import { awardLessonComplete } from "@/lib/points";
+import { LessonReviews } from "@/components/LessonReviews";
 
 export const Route = createFileRoute("/modulo/$moduleId/aula/$lessonId")({
   head: () => ({ meta: [{ title: "Aula — Etek Academy" }] }),
