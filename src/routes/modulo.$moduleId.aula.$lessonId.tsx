@@ -28,9 +28,6 @@ function LessonPage() {
   const currentIndex = mod.lessons.findIndex((l) => l.id === lesson.id);
   const nextLesson = mod.lessons[currentIndex + 1];
 
-  const [rating, setRating] = useState(0);
-  const [rated, setRated] = useState(false);
-
   const handleComplete = () => {
     const next = !done;
     setLessonCompleted(lesson.id, next);
@@ -47,13 +44,6 @@ function LessonPage() {
     }
   };
 
-  const handleRate = (n: number) => {
-    setRating(n);
-    if (!rated) {
-      setRated(true);
-      awardLessonRate(lesson.id);
-    }
-  };
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
