@@ -126,32 +126,9 @@ function LessonPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">{lesson.description}</p>
           </section>
 
-          <section className="space-y-3 rounded-2xl border border-border bg-card p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-bold">Avalie esta aula</h2>
-                <p className="text-xs text-muted-foreground">
-                  {rated ? "Obrigado pela avaliação! +1 ponto" : "Ganhe 1 ponto ao avaliar"}
-                </p>
-              </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => handleRate(n)}
-                    className="p-1 transition hover:scale-110"
-                    aria-label={`Avaliar ${n} estrelas`}
-                  >
-                    <Star
-                      className={`h-5 w-5 ${
-                        n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
+          <LessonReviews lessonId={lesson.id} />
+
+
 
 
           <section className="space-y-3 rounded-2xl border border-border bg-card p-6">
