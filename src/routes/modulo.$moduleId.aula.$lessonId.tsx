@@ -1,9 +1,9 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, PlayCircle, Clock, Download, FileText, Check, Star } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, CheckCircle2, PlayCircle, Clock, Download, FileText, Check } from "lucide-react";
 import { findLesson, findModule } from "@/lib/course-data";
 import { useProgress } from "@/lib/progress";
-import { awardLessonComplete, awardLessonRate } from "@/lib/points";
+import { awardLessonComplete } from "@/lib/points";
+import { LessonReviews } from "@/components/LessonReviews";
 
 export const Route = createFileRoute("/modulo/$moduleId/aula/$lessonId")({
   head: () => ({ meta: [{ title: "Aula — Etek Academy" }] }),
@@ -28,9 +28,6 @@ function LessonPage() {
   const currentIndex = mod.lessons.findIndex((l) => l.id === lesson.id);
   const nextLesson = mod.lessons[currentIndex + 1];
 
-  const [rating, setRating] = useState(0);
-  const [rated, setRated] = useState(false);
-
   const handleComplete = () => {
     const next = !done;
     setLessonCompleted(lesson.id, next);
@@ -47,13 +44,6 @@ function LessonPage() {
     }
   };
 
-  const handleRate = (n: number) => {
-    setRating(n);
-    if (!rated) {
-      setRated(true);
-      awardLessonRate(lesson.id);
-    }
-  };
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
@@ -136,32 +126,9 @@ function LessonPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">{lesson.description}</p>
           </section>
 
-          <section className="space-y-3 rounded-2xl border border-border bg-card p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-bold">Avalie esta aula</h2>
-                <p className="text-xs text-muted-foreground">
-                  {rated ? "Obrigado pela avaliação! +1 ponto" : "Ganhe 1 ponto ao avaliar"}
-                </p>
-              </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => handleRate(n)}
-                    className="p-1 transition hover:scale-110"
-                    aria-label={`Avaliar ${n} estrelas`}
-                  >
-                    <Star
-                      className={`h-5 w-5 ${
-                        n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
+          <LessonReviews lessonId={lesson.id} />
+
+
 
 
           <section className="space-y-3 rounded-2xl border border-border bg-card p-6">
