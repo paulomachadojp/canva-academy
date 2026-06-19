@@ -10,7 +10,7 @@ export type PointAction =
 
 const POINTS = {
   lesson_complete: 3,
-  lesson_rate: 1,
+  lesson_rate: 0.5,
   module_complete: 15,
   course_complete: 50,
 };
