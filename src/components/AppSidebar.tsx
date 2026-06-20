@@ -1,5 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlayCircle, FolderOpen, Award, Trophy } from "lucide-react";
+import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
   SidebarContent,
@@ -12,16 +14,35 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const items = [
-  { title: "Início", url: "/", icon: Home },
-  { title: "Curso Canva", url: "/curso-canva", icon: PlayCircle },
-  { title: "Materiais", url: "/materiais", icon: FolderOpen },
-  { title: "Certificado", url: "/certificado", icon: Award },
-  { title: "Ranking", url: "/ranking", icon: Trophy },
+const baseItems = [
+  { title: "Início", url: "/" as const, icon: Home },
+  { title: "Curso Canva", url: "/curso-canva" as const, icon: PlayCircle },
+  { title: "Materiais", url: "/materiais" as const, icon: FolderOpen },
+  { title: "Certificado", url: "/certificado" as const, icon: Award },
+  { title: "Ranking", url: "/ranking" as const, icon: Trophy },
 ];
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) { if (active) setIsAdmin(false); return; }
+      const { data } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
+      if (active) setIsAdmin(!!data);
+    };
+    check();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => check());
+    return () => { active = false; sub.subscription.unsubscribe(); };
+  }, []);
+
+  const items = isAdmin
+    ? [...baseItems, { title: "Admin", url: "/admin" as const, icon: Shield }]
+    : baseItems;
+
 
   return (
     <Sidebar collapsible="icon">
