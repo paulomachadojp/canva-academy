@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { fetchTopRanking, type RankingEntry } from "@/lib/points";
+import { fetchTopRanking, type RankingRow } from "@/lib/points";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin/ranking")({
 });
 
 function AdminRanking() {
-  const [rows, setRows] = useState<RankingEntry[]>([]);
+  const [rows, setRows] = useState<RankingRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
