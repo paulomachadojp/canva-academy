@@ -13,8 +13,16 @@ import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as MateriaisRouteImport } from './routes/materiais'
 import { Route as CursoCanvaRouteImport } from './routes/curso-canva'
 import { Route as CertificadoRouteImport } from './routes/certificado'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ModuloModuleIdRouteImport } from './routes/modulo.$moduleId'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminRankingRouteImport } from './routes/admin.ranking'
+import { Route as AdminModulosRouteImport } from './routes/admin.modulos'
+import { Route as AdminCursosRouteImport } from './routes/admin.cursos'
+import { Route as AdminAulasRouteImport } from './routes/admin.aulas'
 import { Route as ModuloModuleIdAulaLessonIdRouteImport } from './routes/modulo.$moduleId.aula.$lessonId'
 
 const RankingRoute = RankingRouteImport.update({
@@ -37,15 +45,55 @@ const CertificadoRoute = CertificadoRouteImport.update({
   path: '/certificado',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ModuloModuleIdRoute = ModuloModuleIdRouteImport.update({
   id: '/modulo/$moduleId',
   path: '/modulo/$moduleId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRankingRoute = AdminRankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminModulosRoute = AdminModulosRouteImport.update({
+  id: '/modulos',
+  path: '/modulos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCursosRoute = AdminCursosRouteImport.update({
+  id: '/cursos',
+  path: '/cursos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAulasRoute = AdminAulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ModuloModuleIdAulaLessonIdRoute =
   ModuloModuleIdAulaLessonIdRouteImport.update({
@@ -56,64 +104,112 @@ const ModuloModuleIdAulaLessonIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/certificado': typeof CertificadoRoute
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/certificado': typeof CertificadoRoute
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/admin': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/certificado': typeof CertificadoRoute
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
+    | '/auth'
     | '/certificado'
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
+    | '/admin/'
     | '/modulo/$moduleId/aula/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/certificado'
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
+    | '/admin'
     | '/modulo/$moduleId/aula/$lessonId'
   id:
     | '__root__'
     | '/'
+    | '/admin'
+    | '/auth'
     | '/certificado'
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
+    | '/admin/'
     | '/modulo/$moduleId/aula/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRoute
   CertificadoRoute: typeof CertificadoRoute
   CursoCanvaRoute: typeof CursoCanvaRoute
   MateriaisRoute: typeof MateriaisRoute
@@ -151,6 +247,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificadoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -158,12 +268,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/modulo/$moduleId': {
       id: '/modulo/$moduleId'
       path: '/modulo/$moduleId'
       fullPath: '/modulo/$moduleId'
       preLoaderRoute: typeof ModuloModuleIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ranking': {
+      id: '/admin/ranking'
+      path: '/ranking'
+      fullPath: '/admin/ranking'
+      preLoaderRoute: typeof AdminRankingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/modulos': {
+      id: '/admin/modulos'
+      path: '/modulos'
+      fullPath: '/admin/modulos'
+      preLoaderRoute: typeof AdminModulosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cursos': {
+      id: '/admin/cursos'
+      path: '/cursos'
+      fullPath: '/admin/cursos'
+      preLoaderRoute: typeof AdminCursosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/aulas': {
+      id: '/admin/aulas'
+      path: '/aulas'
+      fullPath: '/admin/aulas'
+      preLoaderRoute: typeof AdminAulasRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/modulo/$moduleId/aula/$lessonId': {
       id: '/modulo/$moduleId/aula/$lessonId'
@@ -174,6 +326,26 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAulasRoute: typeof AdminAulasRoute
+  AdminCursosRoute: typeof AdminCursosRoute
+  AdminModulosRoute: typeof AdminModulosRoute
+  AdminRankingRoute: typeof AdminRankingRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAulasRoute: AdminAulasRoute,
+  AdminCursosRoute: AdminCursosRoute,
+  AdminModulosRoute: AdminModulosRoute,
+  AdminRankingRoute: AdminRankingRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface ModuloModuleIdRouteChildren {
   ModuloModuleIdAulaLessonIdRoute: typeof ModuloModuleIdAulaLessonIdRoute
@@ -189,6 +361,8 @@ const ModuloModuleIdRouteWithChildren = ModuloModuleIdRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRoute,
   CertificadoRoute: CertificadoRoute,
   CursoCanvaRoute: CursoCanvaRoute,
   MateriaisRoute: MateriaisRoute,
