@@ -18,6 +18,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ModuloModuleIdRouteImport } from './routes/modulo.$moduleId'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminRankingRouteImport } from './routes/admin.ranking'
+import { Route as AdminModulosRouteImport } from './routes/admin.modulos'
+import { Route as AdminCursosRouteImport } from './routes/admin.cursos'
+import { Route as AdminAulasRouteImport } from './routes/admin.aulas'
 import { Route as ModuloModuleIdAulaLessonIdRouteImport } from './routes/modulo.$moduleId.aula.$lessonId'
 
 const RankingRoute = RankingRouteImport.update({
@@ -65,6 +70,31 @@ const ModuloModuleIdRoute = ModuloModuleIdRouteImport.update({
   path: '/modulo/$moduleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRankingRoute = AdminRankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminModulosRoute = AdminModulosRouteImport.update({
+  id: '/modulos',
+  path: '/modulos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCursosRoute = AdminCursosRouteImport.update({
+  id: '/cursos',
+  path: '/cursos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAulasRoute = AdminAulasRouteImport.update({
+  id: '/aulas',
+  path: '/aulas',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ModuloModuleIdAulaLessonIdRoute =
   ModuloModuleIdAulaLessonIdRouteImport.update({
     id: '/aula/$lessonId',
@@ -80,6 +110,11 @@ export interface FileRoutesByFullPath {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
@@ -91,6 +126,11 @@ export interface FileRoutesByTo {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
@@ -104,6 +144,11 @@ export interface FileRoutesById {
   '/curso-canva': typeof CursoCanvaRoute
   '/materiais': typeof MateriaisRoute
   '/ranking': typeof RankingRoute
+  '/admin/aulas': typeof AdminAulasRoute
+  '/admin/cursos': typeof AdminCursosRoute
+  '/admin/modulos': typeof AdminModulosRoute
+  '/admin/ranking': typeof AdminRankingRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/modulo/$moduleId': typeof ModuloModuleIdRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/modulo/$moduleId/aula/$lessonId': typeof ModuloModuleIdAulaLessonIdRoute
@@ -118,6 +163,11 @@ export interface FileRouteTypes {
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
     | '/admin/'
     | '/modulo/$moduleId/aula/$lessonId'
@@ -129,6 +179,11 @@ export interface FileRouteTypes {
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
     | '/admin'
     | '/modulo/$moduleId/aula/$lessonId'
@@ -141,6 +196,11 @@ export interface FileRouteTypes {
     | '/curso-canva'
     | '/materiais'
     | '/ranking'
+    | '/admin/aulas'
+    | '/admin/cursos'
+    | '/admin/modulos'
+    | '/admin/ranking'
+    | '/admin/usuarios'
     | '/modulo/$moduleId'
     | '/admin/'
     | '/modulo/$moduleId/aula/$lessonId'
@@ -222,6 +282,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModuloModuleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ranking': {
+      id: '/admin/ranking'
+      path: '/ranking'
+      fullPath: '/admin/ranking'
+      preLoaderRoute: typeof AdminRankingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/modulos': {
+      id: '/admin/modulos'
+      path: '/modulos'
+      fullPath: '/admin/modulos'
+      preLoaderRoute: typeof AdminModulosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cursos': {
+      id: '/admin/cursos'
+      path: '/cursos'
+      fullPath: '/admin/cursos'
+      preLoaderRoute: typeof AdminCursosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/aulas': {
+      id: '/admin/aulas'
+      path: '/aulas'
+      fullPath: '/admin/aulas'
+      preLoaderRoute: typeof AdminAulasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/modulo/$moduleId/aula/$lessonId': {
       id: '/modulo/$moduleId/aula/$lessonId'
       path: '/aula/$lessonId'
@@ -233,10 +328,20 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAulasRoute: typeof AdminAulasRoute
+  AdminCursosRoute: typeof AdminCursosRoute
+  AdminModulosRoute: typeof AdminModulosRoute
+  AdminRankingRoute: typeof AdminRankingRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAulasRoute: AdminAulasRoute,
+  AdminCursosRoute: AdminCursosRoute,
+  AdminModulosRoute: AdminModulosRoute,
+  AdminRankingRoute: AdminRankingRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
