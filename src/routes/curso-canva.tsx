@@ -1,19 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlayCircle, CheckCircle2, Lock } from "lucide-react";
+import { PlayCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { usePrimaryCourse, useModules, useCourseLessons } from "@/lib/queries";
+import { useProgress } from "@/lib/progress";
 
 export const Route = createFileRoute("/curso-canva")({
   head: () => ({ meta: [{ title: "Curso Canva — Etek Academy" }] }),
   component: CursoCanva,
 });
 
-const modules = [
-  { title: "Introdução ao Canva", lessons: 5, status: "done" as const },
-  { title: "Ferramentas Essenciais", lessons: 8, status: "current" as const },
-  { title: "Tipografia e Cores", lessons: 6, status: "locked" as const },
-  { title: "Projetos Práticos", lessons: 10, status: "locked" as const },
-];
-
 function CursoCanva() {
+  const courseQ = usePrimaryCourse();
+  const courseId = courseQ.data?.id;
+  const modulesQ = useModules(courseId);
+  const lessonsQ = useCourseLessons(courseId);
+  const { progressFor } = useProgress();
+
+  if (courseQ.isLoading || modulesQ.isLoading || lessonsQ.isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  const error = courseQ.error || modulesQ.error || lessonsQ.error;
+  if (error) return <p className="text-sm text-destructive">Erro: {(error as Error).message}</p>;
+  if (!courseQ.data) return <p className="text-sm text-muted-foreground">Nenhum curso disponível.</p>;
+
+  const course = courseQ.data;
+  const mods = modulesQ.data ?? [];
+  const lessons = lessonsQ.data ?? [];
+  const totalAulas = lessons.length;
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -21,10 +38,12 @@ function CursoCanva() {
           <PlayCircle className="h-20 w-20 text-primary" />
         </div>
         <div className="space-y-3 p-6 md:p-8">
-          <h1 className="text-2xl font-bold md:text-3xl">Curso Completo de Canva</h1>
-          <p className="text-muted-foreground">Aprenda a criar designs profissionais do zero ao avançado.</p>
+          <h1 className="text-2xl font-bold md:text-3xl">{course.name}</h1>
+          {course.description && (
+            <p className="text-muted-foreground">{course.description}</p>
+          )}
           <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-            <span>29 aulas</span><span>•</span><span>4h 32min</span><span>•</span><span>Certificado incluso</span>
+            <span>{totalAulas} aulas</span><span>•</span><span>{mods.length} módulos</span><span>•</span><span>Certificado incluso</span>
           </div>
         </div>
       </div>
@@ -32,19 +51,21 @@ function CursoCanva() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold">Módulos</h2>
         <div className="space-y-2">
-          {modules.map((m, i) => (
-            <div key={m.title} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition hover:border-primary/50">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent">
-                {m.status === "done" && <CheckCircle2 className="h-5 w-5 text-primary" />}
-                {m.status === "current" && <PlayCircle className="h-5 w-5 text-primary" />}
-                {m.status === "locked" && <Lock className="h-5 w-5 text-muted-foreground" />}
+          {mods.map((m, i) => {
+            const ml = lessons.filter((l) => l.module_id === m.id);
+            const p = progressFor(ml.map((l) => l.id));
+            return (
+              <div key={m.id} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition hover:border-primary/50">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent">
+                  {p.percent >= 100 ? <CheckCircle2 className="h-5 w-5 text-primary" /> : <PlayCircle className="h-5 w-5 text-primary" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate font-semibold">Módulo {i + 1}: {m.name}</h3>
+                  <p className="text-sm text-muted-foreground">{ml.length} aulas · {p.percent}%</p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate font-semibold">Módulo {i + 1}: {m.title}</h3>
-                <p className="text-sm text-muted-foreground">{m.lessons} aulas</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

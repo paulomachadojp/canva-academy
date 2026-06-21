@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { modules, totalLessons } from "./course-data";
 
 const KEY = "etek:completed-lessons";
 
@@ -16,6 +15,8 @@ function read(): Set<string> {
 function emit() {
   window.dispatchEvent(new Event("etek:progress"));
 }
+
+export type ProgressInfo = { completed: number; total: number; percent: number };
 
 export function useProgress() {
   const [completed, setCompleted] = useState<Set<string>>(() => read());
@@ -38,26 +39,20 @@ export function useProgress() {
     emit();
   }, []);
 
-  const isCompleted = useCallback((lessonId: string) => completed.has(lessonId), [completed]);
+  const isCompleted = useCallback(
+    (lessonId: string) => completed.has(lessonId),
+    [completed],
+  );
 
-  const moduleProgress = useCallback(
-    (moduleId: string) => {
-      const mod = modules.find((m) => m.id === moduleId);
-      if (!mod) return { completed: 0, total: 0, percent: 0 };
-      const done = mod.lessons.filter((l) => completed.has(l.id)).length;
-      return {
-        completed: done,
-        total: mod.lessons.length,
-        percent: Math.round((done / mod.lessons.length) * 100),
-      };
+  const progressFor = useCallback(
+    (lessonIds: string[]): ProgressInfo => {
+      const total = lessonIds.length;
+      if (total === 0) return { completed: 0, total: 0, percent: 0 };
+      const done = lessonIds.filter((id) => completed.has(id)).length;
+      return { completed: done, total, percent: Math.round((done / total) * 100) };
     },
     [completed],
   );
 
-  const courseProgress = useCallback(() => {
-    const done = completed.size;
-    return { completed: done, total: totalLessons, percent: Math.round((done / totalLessons) * 100) };
-  }, [completed]);
-
-  return { isCompleted, setLessonCompleted, moduleProgress, courseProgress };
+  return { completed, isCompleted, setLessonCompleted, progressFor };
 }

@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { modules } from "./course-data";
 
 export type PointAction =
   | "login"
@@ -52,11 +51,9 @@ async function insertPoints(userId: string, action: string, points: number) {
   return true;
 }
 
-/** Award daily login points via SECURITY DEFINER RPC. Returns pts awarded or null. */
 export async function awardDailyLogin(): Promise<number | null> {
   const uid = await currentUserId();
   if (!uid) return null;
-  // Once per browser-session debounce
   if (typeof window !== "undefined") {
     const key = `etek:login-awarded:${uid}:${new Date().toISOString().slice(0, 10)}`;
     if (sessionStorage.getItem(key)) return 0;
@@ -72,41 +69,60 @@ export async function awardDailyLogin(): Promise<number | null> {
 }
 
 async function maybeAwardModuleAndCourse(userId: string, moduleId: string) {
-  const mod = modules.find((m) => m.id === moduleId);
+  // Fetch module's lessons and its course
+  const { data: mod } = await supabase
+    .from("modules")
+    .select("id, course_id")
+    .eq("id", moduleId)
+    .maybeSingle();
   if (!mod) return;
 
-  // Count distinct lesson_complete actions for lessons in this module
-  const lessonActions = mod.lessons.map((l) => `lesson_complete:${l.id}`);
+  const { data: modLessons } = await supabase
+    .from("lessons")
+    .select("id")
+    .eq("module_id", moduleId);
+  const modLessonIds = (modLessons ?? []).map((l) => l.id);
+  if (modLessonIds.length === 0) return;
+
+  const modActions = modLessonIds.map((id) => `lesson_complete:${id}`);
   const { data: modRows } = await supabase
     .from("user_points")
     .select("action")
     .eq("user_id", userId)
-    .in("action", lessonActions);
+    .in("action", modActions);
+  const doneInMod = new Set((modRows ?? []).map((r) => r.action));
+  if (doneInMod.size < modLessonIds.length) return;
 
-  const doneLessons = new Set((modRows ?? []).map((r) => r.action));
-  if (doneLessons.size >= mod.lessons.length) {
-    const modAction = `module_complete:${mod.id}`;
-    if (!(await hasAction(userId, modAction))) {
-      await insertPoints(userId, modAction, POINTS.module_complete);
-    }
+  const modAction = `module_complete:${moduleId}`;
+  if (!(await hasAction(userId, modAction))) {
+    await insertPoints(userId, modAction, POINTS.module_complete);
+  }
 
-    // Check whole course
-    const allLessonActions = modules.flatMap((m) =>
-      m.lessons.map((l) => `lesson_complete:${l.id}`),
-    );
-    const { data: courseRows } = await supabase
-      .from("user_points")
-      .select("action")
-      .eq("user_id", userId)
-      .in("action", allLessonActions);
-    const totalDone = new Set((courseRows ?? []).map((r) => r.action)).size;
-    const totalLessons = modules.reduce((a, m) => a + m.lessons.length, 0);
-    if (totalDone >= totalLessons) {
-      const courseAction = `course_complete:canva`;
-      if (!(await hasAction(userId, courseAction))) {
-        await insertPoints(userId, courseAction, POINTS.course_complete);
-      }
-    }
+  // Course completion check
+  const { data: courseMods } = await supabase
+    .from("modules")
+    .select("id")
+    .eq("course_id", mod.course_id);
+  const courseModIds = (courseMods ?? []).map((m) => m.id);
+  if (courseModIds.length === 0) return;
+  const { data: courseLessons } = await supabase
+    .from("lessons")
+    .select("id")
+    .in("module_id", courseModIds);
+  const courseLessonIds = (courseLessons ?? []).map((l) => l.id);
+  if (courseLessonIds.length === 0) return;
+  const courseActions = courseLessonIds.map((id) => `lesson_complete:${id}`);
+  const { data: courseRows } = await supabase
+    .from("user_points")
+    .select("action")
+    .eq("user_id", userId)
+    .in("action", courseActions);
+  const totalDone = new Set((courseRows ?? []).map((r) => r.action)).size;
+  if (totalDone < courseLessonIds.length) return;
+
+  const courseAction = `course_complete:${mod.course_id}`;
+  if (!(await hasAction(userId, courseAction))) {
+    await insertPoints(userId, courseAction, POINTS.course_complete);
   }
 }
 
