@@ -1,26 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, Download, Lock } from "lucide-react";
+import { Award, Download, Lock, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { useProgress } from "@/lib/progress";
-import { modules } from "@/lib/course-data";
 import { supabase } from "@/integrations/supabase/client";
+import { usePrimaryCourse, useCourseLessons } from "@/lib/queries";
 
 export const Route = createFileRoute("/certificado")({
   head: () => ({ meta: [{ title: "Certificado — Etek Academy" }] }),
   component: Certificado,
 });
 
-const COURSE_NAME = "Canva do Zero ao Profissional";
-
-function totalHours() {
+function totalHoursFromDurations(durations: (string | null)[]) {
   let totalMin = 0;
-  for (const m of modules) {
-    for (const l of m.lessons) {
-      const [mm, ss] = l.duration.split(":").map(Number);
-      totalMin += (mm || 0) + (ss || 0) / 60;
-    }
+  for (const d of durations) {
+    if (!d) continue;
+    const [mm, ss] = d.split(":").map(Number);
+    totalMin += (mm || 0) + (ss || 0) / 60;
   }
   return Math.max(1, Math.round(totalMin / 60));
 }
@@ -32,10 +29,9 @@ function makeValidationCode(seed: string) {
 }
 
 function Certificado() {
-  const { courseProgress } = useProgress();
-  const overall = courseProgress();
-  const completed = overall.percent >= 100;
-  const hours = totalHours();
+  const courseQ = usePrimaryCourse();
+  const lessonsQ = useCourseLessons(courseQ.data?.id);
+  const { progressFor } = useProgress();
   const [studentName, setStudentName] = useState("Aluno Etek");
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -52,26 +48,42 @@ function Certificado() {
     });
   }, []);
 
+  if (courseQ.isLoading || lessonsQ.isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (courseQ.error || lessonsQ.error) {
+    return <p className="text-sm text-destructive">Erro ao carregar curso.</p>;
+  }
+  if (!courseQ.data) {
+    return <p className="text-sm text-muted-foreground">Nenhum curso disponível.</p>;
+  }
+
+  const course = courseQ.data;
+  const lessons = lessonsQ.data ?? [];
+  const overall = progressFor(lessons.map((l) => l.id));
+  const completed = overall.total > 0 && overall.percent >= 100;
+  const hours = totalHoursFromDurations(lessons.map((l) => l.duration));
   const completionDate = new Date().toLocaleDateString("pt-BR");
-  const validationCode = makeValidationCode(`${userId ?? "guest"}|${COURSE_NAME}`);
+  const validationCode = makeValidationCode(`${userId ?? "guest"}|${course.id}`);
 
   function downloadPdf() {
     const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
     const w = doc.internal.pageSize.getWidth();
     const h = doc.internal.pageSize.getHeight();
 
-    // Background
     doc.setFillColor(15, 18, 26);
     doc.rect(0, 0, w, h, "F");
 
-    // Border
     doc.setDrawColor(217, 119, 6);
     doc.setLineWidth(3);
     doc.rect(24, 24, w - 48, h - 48);
     doc.setLineWidth(0.5);
     doc.rect(34, 34, w - 68, h - 68);
 
-    // Header
     doc.setTextColor(217, 119, 6);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
@@ -94,11 +106,9 @@ function Certificado() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(14);
     doc.setTextColor(200, 200, 200);
-    const body = `concluiu com êxito o curso "${COURSE_NAME}",`;
-    doc.text(body, w / 2, 295, { align: "center" });
+    doc.text(`concluiu com êxito o curso "${course.name}",`, w / 2, 295, { align: "center" });
     doc.text(`com carga horária total de ${hours} horas.`, w / 2, 318, { align: "center" });
 
-    // Footer details
     const footerY = h - 110;
     doc.setDrawColor(120, 120, 120);
     doc.line(80, footerY, 260, footerY);
@@ -163,7 +173,7 @@ function Certificado() {
           <Award className="h-10 w-10" />
         </div>
         <h2 className="mt-6 text-2xl font-bold">Certificado disponível</h2>
-        <p className="mt-2 text-muted-foreground">{COURSE_NAME}</p>
+        <p className="mt-2 text-muted-foreground">{course.name}</p>
 
         <dl className="mx-auto mt-6 grid max-w-md grid-cols-2 gap-4 text-left text-sm">
           <div>
