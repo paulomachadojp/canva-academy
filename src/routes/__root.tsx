@@ -33,23 +33,56 @@ function NotFoundComponent() {
   );
 }
 
+function isChunkLoadError(error: Error) {
+  const msg = error?.message ?? "";
+  return (
+    /Failed to fetch dynamically imported module/i.test(msg) ||
+    /Importing a module script failed/i.test(msg) ||
+    /ChunkLoadError/i.test(error?.name ?? "") ||
+    /Loading chunk [\d]+ failed/i.test(msg)
+  );
+}
+
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  const chunkError = isChunkLoadError(error);
+
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+    if (chunkError && typeof window !== "undefined") {
+      // Stale build: served HTML references a chunk that no longer exists.
+      // Reload once to pick up the fresh bundle.
+      const key = "__chunk_reload_attempt__";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        window.location.reload();
+      }
+    } else if (!chunkError) {
+      try { sessionStorage.removeItem("__chunk_reload_attempt__"); } catch {}
+    }
+  }, [error, chunkError]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">Algo deu errado</h1>
+        <h1 className="text-xl font-semibold">
+          {chunkError ? "Atualizando para a versão mais recente..." : "Algo deu errado"}
+        </h1>
         <div className="mt-6">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              if (chunkError && typeof window !== "undefined") {
+                try { sessionStorage.removeItem("__chunk_reload_attempt__"); } catch {}
+                window.location.reload();
+                return;
+              }
+              router.invalidate();
+              reset();
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            Tentar novamente
+            {chunkError ? "Recarregar agora" : "Tentar novamente"}
           </button>
         </div>
       </div>
