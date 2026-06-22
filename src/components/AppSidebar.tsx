@@ -1,10 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield } from "lucide-react";
+import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -25,12 +26,17 @@ const baseItems = [
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<null | { id: string; email?: string }>(null);
 
   useEffect(() => {
     let active = true;
     const check = async () => {
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { if (active) setIsAdmin(false); return; }
+      if (!u.user) {
+        if (active) { setIsAdmin(false); setUser(null); }
+        return;
+      }
+      if (active) setUser({ id: u.user.id, email: u.user.email });
       const { data } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
       if (active) setIsAdmin(!!data);
     };
@@ -42,7 +48,6 @@ export function AppSidebar() {
   const items = isAdmin
     ? [...baseItems, { title: "Admin", url: "/admin" as const, icon: Shield }]
     : baseItems;
-
 
   return (
     <Sidebar collapsible="icon">
@@ -78,6 +83,34 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t border-sidebar-border">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {user ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => supabase.auth.signOut()}
+                    tooltip="Sair"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sair</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname === "/auth"} tooltip="Entrar">
+                    <Link to="/auth">
+                      <LogIn className="h-4 w-4" />
+                      <span>Entrar</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarFooter>
     </Sidebar>
   );
 }
