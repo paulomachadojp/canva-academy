@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
