@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield } from "lucide-react";
+import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
