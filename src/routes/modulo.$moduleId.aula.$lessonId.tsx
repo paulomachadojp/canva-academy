@@ -1,8 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, PlayCircle, Clock, Download, FileText, Check, Loader2 } from "lucide-react";
 import { useProgress } from "@/lib/progress";
-import { awardLessonComplete } from "@/lib/points";
-import { LessonReviews } from "@/components/LessonReviews";
 import { useLesson, useLessons, useModule, useCourseLessons, extractYoutubeId } from "@/lib/queries";
 
 export const Route = createFileRoute("/modulo/$moduleId/aula/$lessonId")({
@@ -44,16 +42,11 @@ function LessonPage() {
   const ytId = extractYoutubeId(lesson.youtube_url);
 
   const handleComplete = () => {
-    const next = !done;
-    setLessonCompleted(lesson.id, next);
-    if (next) awardLessonComplete(mod.id, lesson.id);
+    setLessonCompleted(lesson.id, !done);
   };
 
   const handleCompleteAndNext = () => {
-    if (!done) {
-      setLessonCompleted(lesson.id, true);
-      awardLessonComplete(mod.id, lesson.id);
-    }
+    if (!done) setLessonCompleted(lesson.id, true);
     if (nextLesson) {
       navigate({ to: "/modulo/$moduleId/aula/$lessonId", params: { moduleId: mod.id, lessonId: nextLesson.id } });
     }
@@ -150,7 +143,7 @@ function LessonPage() {
             </section>
           )}
 
-          <LessonReviews lessonId={lesson.id} />
+          
 
           {lesson.material_url && (
             <section className="space-y-3 rounded-2xl border border-border bg-card p-6">

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { BookOpen, FolderTree, PlayCircle, Users, Trophy, Loader2 } from "lucide-react";
+import { PlayCircle, Users, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -10,11 +10,8 @@ export const Route = createFileRoute("/admin")({
 });
 
 const tabs = [
-  { to: "/admin/cursos", label: "Cursos", icon: BookOpen },
-  { to: "/admin/modulos", label: "Módulos", icon: FolderTree },
   { to: "/admin/aulas", label: "Aulas", icon: PlayCircle },
   { to: "/admin/usuarios", label: "Usuários", icon: Users },
-  { to: "/admin/ranking", label: "Ranking", icon: Trophy },
 ] as const;
 
 function AdminLayout() {
@@ -57,11 +54,11 @@ function AdminLayout() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold">Painel Administrativo</h1>
-        <p className="text-muted-foreground">Gerencie cursos, módulos, aulas e usuários.</p>
+        <p className="text-muted-foreground">Gerencie aulas e usuários.</p>
       </div>
       <nav className="flex flex-wrap gap-2 border-b border-border">
         {tabs.map((t) => {
-          const active = pathname === t.to || (t.to === "/admin/cursos" && pathname === "/admin");
+          const active = pathname === t.to || (t.to === "/admin/aulas" && pathname === "/admin");
           return (
             <Link
               key={t.to}

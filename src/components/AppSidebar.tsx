@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlayCircle, FolderOpen, Award, Trophy, Shield, LogIn, LogOut } from "lucide-react";
+import { Home, Award, Shield, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -17,10 +17,7 @@ import {
 
 const baseItems = [
   { title: "Início", url: "/" as const, icon: Home },
-  { title: "Curso Canva", url: "/curso-canva" as const, icon: PlayCircle },
-  { title: "Materiais", url: "/materiais" as const, icon: FolderOpen },
   { title: "Certificado", url: "/certificado" as const, icon: Award },
-  { title: "Ranking", url: "/ranking" as const, icon: Trophy },
 ];
 
 export function AppSidebar() {
