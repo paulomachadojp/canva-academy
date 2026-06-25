@@ -265,19 +265,9 @@ export type Database = {
       }
     }
     Views: {
-      user_points_ranking: {
-        Row: {
-          avatar: string | null
-          name: string | null
-          position: number | null
-          total_points: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      award_daily_login: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
