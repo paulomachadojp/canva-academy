@@ -39,11 +39,7 @@ function Certificado() {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) return;
       setUserId(data.user.id);
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("name")
-        .eq("id", data.user.id)
-        .maybeSingle();
+      const { data: profile } = await supabase.from("profiles").select("name").eq("id", data.user.id).maybeSingle();
       if (profile?.name) setStudentName(profile.name);
     });
   }, []);
@@ -87,7 +83,7 @@ function Certificado() {
     doc.setTextColor(217, 119, 6);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.text("ETEK ACADEMY", w / 2, 80, { align: "center" });
+    doc.text("ACADEMY", w / 2, 80, { align: "center" });
 
     doc.setTextColor(240, 240, 240);
     doc.setFontSize(36);
@@ -143,9 +139,7 @@ function Certificado() {
             <Lock className="h-10 w-10" />
           </div>
           <h2 className="mt-6 text-2xl font-bold">Certificado bloqueado</h2>
-          <p className="mt-2 text-muted-foreground">
-            Complete todas as aulas para liberar seu certificado.
-          </p>
+          <p className="mt-2 text-muted-foreground">Complete todas as aulas para liberar seu certificado.</p>
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
