@@ -76,47 +76,23 @@ function AuthPage() {
           <CardTitle className="text-center text-2xl">Academy</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
-            </TabsList>
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Senha</Label>
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <Button type="submit" disabled={loading} className="w-full">{loading ? "Entrando..." : "Entrar"}</Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email-s">E-mail</Label>
-                  <Input id="email-s" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-s">Senha</Label>
-                  <Input id="password-s" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-                </div>
-                <Button type="submit" disabled={loading} className="w-full">{loading ? "Criando..." : "Criar conta"}</Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            <Link to="/" className="hover:underline">Voltar ao início</Link>
-          </div>
+          <form onSubmit={handleLogin} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full">{loading ? "Entrando..." : "Entrar"}</Button>
+          </form>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Acesso restrito. Solicite uma conta ao administrador.
+          </p>
         </CardContent>
       </Card>
     </div>
   );
 }
+
