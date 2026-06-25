@@ -25,7 +25,7 @@ function totalHoursFromDurations(durations: (string | null)[]) {
 function makeValidationCode(seed: string) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return `ETK-${h.toString(36).toUpperCase().padStart(8, "0").slice(0, 8)}`;
+  return `CRT-${h.toString(36).toUpperCase().padStart(8, "0").slice(0, 8)}`;
 }
 
 function Certificado() {
