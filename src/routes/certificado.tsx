@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePrimaryCourse, useCourseLessons } from "@/lib/queries";
 
 export const Route = createFileRoute("/certificado")({
-  head: () => ({ meta: [{ title: "Certificado — Etek Academy" }] }),
+  head: () => ({ meta: [{ title: "Certificado — Academy" }] }),
   component: Certificado,
 });
 

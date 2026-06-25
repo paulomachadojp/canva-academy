@@ -93,8 +93,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Etek Academy — Plataforma LMS" },
-      { name: "description", content: "Plataforma de cursos Etek Academy" },
+      { title: "Academy — Plataforma LMS" },
+      { name: "description", content: "Plataforma de cursos Academy" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

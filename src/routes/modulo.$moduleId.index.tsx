@@ -4,7 +4,7 @@ import { useProgress } from "@/lib/progress";
 import { useModule, useLessons } from "@/lib/queries";
 
 export const Route = createFileRoute("/modulo/$moduleId/")({
-  head: () => ({ meta: [{ title: "Módulo — Etek Academy" }] }),
+  head: () => ({ meta: [{ title: "Módulo — Academy" }] }),
   component: ModulePage,
 });
 
