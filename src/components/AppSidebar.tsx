@@ -38,30 +38,39 @@ export function AppSidebar() {
       window.setTimeout(() => {
         if (!active) return;
         userIsAdmin(session.user.id)
-          .then((admin) => { if (active) setIsAdmin(admin); })
-          .catch(() => { if (active) setIsAdmin(false); });
+          .then((admin) => {
+            if (active) setIsAdmin(admin);
+          })
+          .catch(() => {
+            if (active) setIsAdmin(false);
+          });
       }, 0);
     };
-    getCurrentSession().then((session) => { if (active) applyUser(session); }).catch(() => undefined);
+    getCurrentSession()
+      .then((session) => {
+        if (active) applyUser(session);
+      })
+      .catch(() => undefined);
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (active) applyUser(session);
     });
-    return () => { active = false; sub.subscription.unsubscribe(); };
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
-  const items = isAdmin
-    ? [...baseItems, { title: "Admin", url: "/admin" as const, icon: Shield }]
-    : baseItems;
+  const items = isAdmin ? [...baseItems, { title: "Admin", url: "/admin" as const, icon: Shield }] : baseItems;
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2 px-2 py-3">
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground font-display font-bold">
-            C
+            A
           </div>
           <span className="font-display text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden">
-            Canva<span className="text-primary">Academy</span>
+            <span className="text-primary">Academy</span>
           </span>
         </Link>
       </SidebarHeader>
@@ -93,10 +102,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {user ? (
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    onClick={() => supabase.auth.signOut()}
-                    tooltip="Sair"
-                  >
+                  <SidebarMenuButton onClick={() => supabase.auth.signOut()} tooltip="Sair">
                     <LogOut className="h-4 w-4" />
                     <span>Sair</span>
                   </SidebarMenuButton>
