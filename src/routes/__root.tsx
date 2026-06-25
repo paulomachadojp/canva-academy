@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -184,6 +185,7 @@ function RootComponent() {
           </div>
         </SidebarProvider>
       </AuthGate>
+      <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
 }
