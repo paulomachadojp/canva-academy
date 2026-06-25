@@ -3,7 +3,7 @@ import { ArrowLeft, PlayCircle, CheckCircle2, Clock, Loader2 } from "lucide-reac
 import { useProgress } from "@/lib/progress";
 import { useModule, useLessons } from "@/lib/queries";
 
-export const Route = createFileRoute("/modulo/$moduleId")({
+export const Route = createFileRoute("/modulo/$moduleId/")({
   head: () => ({ meta: [{ title: "Módulo — Etek Academy" }] }),
   component: ModulePage,
 });
