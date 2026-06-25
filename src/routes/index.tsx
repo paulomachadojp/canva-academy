@@ -6,8 +6,8 @@ import { usePrimaryCourse, useModules, useCourseLessons } from "@/lib/queries";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Canva do Zero ao Profissional — Etek Academy" },
-      { name: "description", content: "Sua área de aluno Etek Academy" },
+      { title: "Canva do Zero ao Profissional — Academy" },
+      { name: "description", content: "Sua área de aluno Academy" },
     ],
   }),
   component: Index,

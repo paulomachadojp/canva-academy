@@ -74,7 +74,7 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Etek Academy</CardTitle>
+          <CardTitle className="text-center text-2xl">Academy</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login">
