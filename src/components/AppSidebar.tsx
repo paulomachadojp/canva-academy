@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Award, Shield, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentSession, userIsAdmin } from "@/lib/admin-access";
 import {
   Sidebar,
   SidebarContent,
@@ -27,18 +28,24 @@ export function AppSidebar() {
 
   useEffect(() => {
     let active = true;
-    const check = async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) {
-        if (active) { setIsAdmin(false); setUser(null); }
+    const applyUser = (session: Awaited<ReturnType<typeof getCurrentSession>>) => {
+      if (!session?.user) {
+        setIsAdmin(false);
+        setUser(null);
         return;
       }
-      if (active) setUser({ id: u.user.id, email: u.user.email });
-      const { data } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
-      if (active) setIsAdmin(!!data);
+      setUser({ id: session.user.id, email: session.user.email });
+      window.setTimeout(() => {
+        if (!active) return;
+        userIsAdmin(session.user.id)
+          .then((admin) => { if (active) setIsAdmin(admin); })
+          .catch(() => { if (active) setIsAdmin(false); });
+      }, 0);
     };
-    check();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => check());
+    getCurrentSession().then((session) => { if (active) applyUser(session); }).catch(() => undefined);
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) applyUser(session);
+    });
     return () => { active = false; sub.subscription.unsubscribe(); };
   }, []);
 

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { getCurrentSession, userIsAdmin, withTimeout } from "@/lib/admin-access";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -21,19 +22,35 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/" });
-    });
+    let active = true;
+    getCurrentSession()
+      .then(async (session) => {
+        if (!active || !session?.user) return;
+        const admin = await userIsAdmin(session.user.id).catch(() => false);
+        if (active) navigate({ to: admin ? "/admin/aulas" : "/" });
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
   }, [navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Bem-vindo!");
-    navigate({ to: "/" });
+    try {
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password }),
+        15_000,
+        "O login demorou demais. Recarregue a página e tente novamente."
+      );
+      if (error) return toast.error(error.message);
+      toast.success("Bem-vindo!");
+      const admin = data.user ? await userIsAdmin(data.user.id).catch(() => false) : false;
+      navigate({ to: admin ? "/admin/aulas" : "/" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível entrar.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSignup(e: React.FormEvent) {
