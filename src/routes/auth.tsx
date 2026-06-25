@@ -52,22 +52,6 @@ function AuthPage() {
     }
   }
 
-  async function handleSignup(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: { name },
-      },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Conta criada!");
-    navigate({ to: "/" });
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
