@@ -4,13 +4,15 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
@@ -121,22 +123,59 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function AuthGate({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [checked, setChecked] = useState(false);
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      setAuthed(!!data.session);
+      setChecked(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!active) return;
+      setAuthed(!!session);
+      setChecked(true);
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!checked) return;
+    if (!authed && pathname !== "/auth") {
+      router.navigate({ to: "/auth" });
+    }
+  }, [checked, authed, pathname, router]);
+
+  if (!checked && pathname !== "/auth") return null;
+  return <>{children}</>;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
-          <AppSidebar />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <Topbar />
-            <main className="flex-1 p-6 md:p-8">
-              <Outlet />
-            </main>
+      <AuthGate>
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full bg-background">
+            <AppSidebar />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <Topbar />
+              <main className="flex-1 p-6 md:p-8">
+                <Outlet />
+              </main>
+            </div>
           </div>
-        </div>
-      </SidebarProvider>
+        </SidebarProvider>
+      </AuthGate>
     </QueryClientProvider>
   );
 }
