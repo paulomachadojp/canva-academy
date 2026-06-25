@@ -1,6 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { PlayCircle, Users, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCurrentSession, userIsAdmin } from "@/lib/admin-access";
@@ -21,18 +20,15 @@ function AdminLayout() {
   const [state, setState] = useState<"loading" | "ok" | "forbidden">("loading");
 
   useEffect(() => {
-    console.debug("[AdminLayout] guard effect started");
     let active = true;
     (async () => {
       const session = await getCurrentSession().catch(() => null);
-      console.debug("[AdminLayout] session", !!session?.user);
       if (!active) return;
       if (!session?.user) {
         navigate({ to: "/auth" });
         return;
       }
       const admin = await userIsAdmin(session.user.id).catch(() => false);
-      console.debug("[AdminLayout] admin", admin);
       if (!active) return;
       if (!admin) setState("forbidden");
       else setState("ok");
