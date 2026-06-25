@@ -1,8 +1,8 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { PlayCircle, Users, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getCurrentSession, userIsAdmin } from "@/lib/admin-access";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -20,16 +20,20 @@ function AdminLayout() {
   const [state, setState] = useState<"loading" | "ok" | "forbidden">("loading");
 
   useEffect(() => {
+    let active = true;
     (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) {
+      const session = await getCurrentSession().catch(() => null);
+      if (!active) return;
+      if (!session?.user) {
         navigate({ to: "/auth" });
         return;
       }
-      const { data, error } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
-      if (error || !data) setState("forbidden");
+      const admin = await userIsAdmin(session.user.id).catch(() => false);
+      if (!active) return;
+      if (!admin) setState("forbidden");
       else setState("ok");
     })();
+    return () => { active = false; };
   }, [navigate]);
 
   if (state === "loading") {
