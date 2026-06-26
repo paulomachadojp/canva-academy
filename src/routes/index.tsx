@@ -100,11 +100,14 @@ function Index() {
             const modLessons = allLessons.filter((l) => l.module_id === m.id);
             const p = progressFor(modLessons.map((l) => l.id));
             const status = getStatus(p.percent);
+            const firstLessonId = modLessons[0]?.id;
+            const linkProps = firstLessonId
+              ? { to: "/modulo/$moduleId/aula/$lessonId" as const, params: { moduleId: m.id, lessonId: firstLessonId } }
+              : { to: "/modulo/$moduleId" as const, params: { moduleId: m.id } };
             return (
               <Link
                 key={m.id}
-                to="/modulo/$moduleId"
-                params={{ moduleId: m.id }}
+                {...linkProps}
                 className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
               >
                 <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-primary/25 via-accent to-card">
